@@ -70,30 +70,32 @@ for key, file in ellen_files.items():
 matt_df = pd.concat(matt_data.values(), axis=1, keys=matt_data.keys())
 warren_df = pd.concat(warren_data.values(), axis=1, keys=warren_data.keys())
 ellen_df = pd.concat(ellen_data.values(), axis=1, keys=ellen_data.keys())
-combined_df = pd.concat([matt_df, warren_df], axis=1, keys=['matt', 'warren'])
+combined_df = pd.concat([matt_df, warren_df, ellen_df], axis=1, keys=['matt', 'warren', 'ellen'])
 
 
 # store the combined data in an HDF5 file
 with h5py.File('data.h5', 'w') as hdf:
-    # create a group for the combined data
+    # Matt's Data Group
     Matt_Group = hdf.create_group('/Matt_Group')
     for key, value in matt_data.items():
         # Create a new dataset in the group for each key-value pair
         Matt_dataset = Matt_Group.create_dataset(key, data=value)
 
+    # Warren's Data Group
     Warren_Group = hdf.create_group('/Warren_Group')
     for key, value in warren_data.items():
         # Create a new dataset in the group for each key-value pair
         Warren_dataset = Warren_Group.create_dataset(key, data=value)
 
+    # Ellen's Data Group
     Ellen_Group = hdf.create_group('/Ellen_Group')
     for key, value in ellen_data.items():
         # Create a new dataset in the group for each key-value pair
         Ellen_dataset = Ellen_Group.create_dataset(key, data=value)
 
-    # Testing
-    # group = hdf.create_group('combined_data')
-    # # convert the pandas dataframe to a numpy array
-    # data = combined_df.to_numpy()
-    # # write the numpy array to the HDF5 file
-    # group.create_dataset('data', data=data)
+    # Combining Datasets
+    group = hdf.create_group('combined_dataset')
+    # convert the pandas dataframe to a numpy array
+    combined_data = combined_df.to_numpy()
+    # write the numpy array to the HDF5 file
+    comb = group.create_dataset('combined_data', data=combined_data)
