@@ -1,4 +1,4 @@
-
+from sklearn.model_selection import train_test_split
 import numpy as np
 import h5py
 import pandas as pd
@@ -91,17 +91,14 @@ combined_data = pd.concat([
     WrightJacketPocketJ,
 ])
 
-combined_data.to_csv('combined.csv', index=False)
+combined_data.to_csv('Data/Combined_Dataset.csv', index=False)
 
 with h5py.File('data.h5', 'w') as hdf:
-    # # Combined Dataset Creation
+    # Combined Dataset Creation
     combined_DataSet = hdf.create_group('/mainDataset')
     combined_DataSet.create_dataset('mainDataset', data=combined_data)
 
-    comb = pd.read_csv('combined.csv')
-    # comb['Time (s)'] = pd.to_datetime(comb['Time (s)'])
-    comb.set_index('Time (s)', inplace=True)
-    comb.to_csv('testfile.csv')
+    comb = pd.read_csv('Data/Combined_Dataset.csv')
 
     window_size = 500
     segments = [comb.iloc[i:i+window_size] for i in range(0, len(comb), window_size)]
@@ -110,6 +107,18 @@ with h5py.File('data.h5', 'w') as hdf:
     # Shuffle group elements
     for i in range(count_segments):
         segments[i] = segments[i].sample(frac=1).reset_index(drop=True)
+
+    train_data, test_data = train_test_split(comb, test_size=0.1)
+    train_data.to_csv('Data/Training_Data.csv')
+    test_data.to_csv('Data/Testing_Data.csv')
+
+    # Training Dataset Creation
+    training_Dataset = hdf.create_group('/mainDataset/Training')
+    training_Dataset.create_dataset('training_dataset', data=train_data)
+
+    # Testing Dataset Creation
+    testing_Dataset = hdf.create_group('/mainDataset/Testing')
+    testing_Dataset.create_dataset('testing_dataset', data=test_data)
 
     # Matt's Dataset Creation
     # Walking
@@ -154,14 +163,14 @@ with h5py.File('data.h5', 'w') as hdf:
     Ellen_Group.create_dataset('erfpj', data=ErightFrontPocketJ)
     Ellen_Group.create_dataset('eljj', data=EleftJacketPocketJ)
 
-    # # Testing HDF5 Output
-    # with h5py.File('data.h5', 'r') as hdf:
-    #     items = list(hdf.items())
-    #     print(items)
-    #     Matt_Group = hdf.get('/Warren_Group')
-    #     print(list(Matt_Group.items()))
-    #     d1 = Matt_Group.get('wljj')
-    #     d1 = np.array(d1)
-    #     print('\n')
-    #     print(d1.sEllen)
-
+ #
+ # # Testing HDF5 Output
+ #    with h5py.File('data.h5', 'r') as hdf:
+ #        items = list(hdf.items())
+ #        print(items)
+ #        # Matt_Group = hdf.get('/Warren_Group')
+ #        print(list(testing_Dataset.items()))
+ #        d1 = combined_DataSet.get('testing_dataset')
+ #        d1 = np.array(d1)
+ #        print('\n')
+ #        print(d1.shape)
