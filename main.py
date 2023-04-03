@@ -179,8 +179,6 @@ with h5py.File('data.h5', 'w') as hdf:
                     np.std(segments[i]['Absolute acceleration (m/s^2)']),
                     statistics.mode(segments[i]['Absolute acceleration (m/s^2)'])]
         feats = feats.append(pd.DataFrame([features], columns=feats.columns), ignore_index=True)
-        feats.to_csv('tester.csv')
-    print(feats)
 
     # Training and Testing File Creation
     train_data, test_data = train_test_split(comb, test_size=0.1)
