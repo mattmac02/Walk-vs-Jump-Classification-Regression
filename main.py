@@ -98,45 +98,157 @@ combined_data = pd.concat([
 combined_data.to_csv('Data/Combined_Dataset.csv', index=False)
 
 # Visualization
-time = combined_data.iloc[1000:1500, 0]
-# Walking
-# Left Back Pocket
-EllenAVGW = EleftBackPocketW.iloc[1000:1500, 4]
-WarrenAVGW = WleftBackPocketW.iloc[1000:1500, 4]
-MattAVGW = MleftBackPocketW.iloc[1000:1500, 4]
+startTime = 3000
+endTime = 3500
+smallStart = 3000
+smallEnd = 3300
+print(combined_data)
+time = combined_data.iloc[startTime:endTime, 0]
+timeSmall = combined_data.iloc[smallStart: smallEnd, 0]
 
-EllenXW = EleftBackPocketW.iloc[1000:1500, 3]
-WarrenXW = WleftBackPocketW.iloc[1000:1500, 3]
-MattXW = MleftBackPocketW.iloc[1000:1500, 3]
+# Left Back Pocket
+# Walking
+EllenZW = EleftBackPocketW.iloc[startTime:endTime, 3]
+WarrenZW = WleftBackPocketW.iloc[startTime:endTime, 3]
+MattZW = MleftBackPocketW.iloc[startTime:endTime, 3]
 
 # Jumping
-EllenAVGJ = EleftBackPocketJ.iloc[1000:1500, 4]
-WarrenAVGJ = WleftBackPocketJ.iloc[1000:1500, 4]
-MattAVGJ = MleftBackPocketJ.iloc[1000:1500, 4]
 
-EllenXJ = EleftBackPocketJ.iloc[1000:1500, 3]
-WarrenXJ = WleftBackPocketJ.iloc[1000:1500, 3]
-MattXJ = MleftBackPocketJ.iloc[1000:1500, 3]
+EllenZJ = EleftBackPocketJ.iloc[startTime:endTime, 3]
+WarrenZJ = WleftBackPocketJ.iloc[startTime:endTime, 3]
+MattZJ = MleftBackPocketJ.iloc[startTime:endTime, 3]
 
+# plotting left back pocket Z axis
 fig, ax = plt.subplots(figsize=(10, 10), layout="constrained")
-# using average acceleration, not very helpful
-# ax.plot(time, EllenAVGW, label = 'Ellen Walking', color = 'red')
-# ax.plot(time, WarrenAVGW, label = 'Warren Walking', color = 'green')
-# ax.plot(time, MattAVGW, label = 'Matt Walking', color = 'blue')
-#
-# ax.plot(time, EllenAVGJ, label = 'Ellen Walking', color = 'red', linestyle = 'dashed')
-# ax.plot(time, WarrenAVGJ,  label = 'Warren Walking', color = 'green' ,linestyle = 'dashed')
-# ax.plot(time, MattAVGJ,  label = 'Matt Walking', color = 'blue', linestyle = 'dashed')
+plt.title('Z-Axis Left Back Pocket Walking and Jumping (All)')
+plt.xlabel('Time (s)', fontsize=15)
+plt.ylabel('Z Acceleration (m/s^2)', fontsize=15)
+ax.plot(time, EllenZW, label='Ellen Walking', color='red')
+ax.plot(time, WarrenZW, label='Warren Walking', color='green')
+ax.plot(time, MattZW, label='Matt Walking', color='blue')
 
-ax.plot(time, EllenXW, label='Ellen Walking', color='red')
-ax.plot(time, WarrenXW, label='Warren Walking', color='green')
-ax.plot(time, MattXW, label='Matt Walking', color='blue')
+ax.plot(time, EllenZJ, label='Ellen Walking', color='red', linestyle='dashed')
+ax.plot(time, WarrenZJ, label='Warren Walking', color='green', linestyle='dashed')
+ax.plot(time, MattZJ, label='Matt Walking', color='blue', linestyle='dashed')
 
-ax.plot(time, EllenXJ, label='Ellen Walking', color='red', linestyle='dashed')
-ax.plot(time, WarrenXJ, label='Warren Walking', color='green', linestyle='dashed')
-ax.plot(time, MattXJ, label='Matt Walking', color='blue', linestyle='dashed')
+# plotting left back pocket xyz accel [Ellen]
+fig1, ax1 = plt.subplots(figsize=(10, 10), layout="constrained")
+plt.title('XYZ-Axis Left Back Pocket Walking and Jumping (Ellen)')
+plt.xlabel('Time (s)', fontsize=15)
+plt.ylabel('XYZ Acceleration (m/s^2)', fontsize=15)
+ax1.plot(time, EleftBackPocketW.iloc[startTime: endTime, 1], label='X', color='red')
+ax1.plot(time, EleftBackPocketW.iloc[startTime: endTime, 2], label='Y', color='blue')
+ax1.plot(time, EleftBackPocketW.iloc[startTime: endTime, 3], label='Z', color='green')
+
+ax1.plot(time, EleftBackPocketJ.iloc[startTime: endTime, 1], label='Jump X', color='red', linestyle='dashed')
+ax1.plot(time, EleftBackPocketJ.iloc[startTime: endTime, 2], label='Jump Y', color='blue', linestyle='dashed')
+ax1.plot(time, EleftBackPocketJ.iloc[startTime: endTime, 3], label='Jump Z', color='green', linestyle='dashed')
+
+# plotting hand xyz accel [Warren]
+fig2, ax2 = plt.subplots(figsize=(10, 10), layout="constrained")
+plt.title('XYZ-Axis Hand Walking and Jumping (Warren)')
+plt.xlabel('Time (s)', fontsize=15)
+plt.ylabel('XYZ Acceleration (m/s^2)', fontsize=15)
+ax2.plot(time, WrightHandW.iloc[startTime: endTime, 1], label='X', color='red')
+ax2.plot(time, WrightHandW.iloc[startTime: endTime, 2], label='Y', color='blue')
+ax2.plot(time, WrightHandW.iloc[startTime: endTime, 3], label='Z', color='green')
+
+ax2.plot(time, WrightHandJ.iloc[startTime: endTime, 1], label='Jump X', color='red', linestyle='dashed')
+ax2.plot(time, WrightHandJ.iloc[startTime: endTime, 2], label='Jump Y', color='blue', linestyle='dashed')
+ax2.plot(time, WrightHandJ.iloc[startTime: endTime, 3], label='Jump Z', color='green', linestyle='dashed')
+
+# plotting hand xyz accel [Ellen]
+fig3, ax3 = plt.subplots(figsize=(10, 10), layout="constrained")
+plt.title('XYZ-Axis Hand Walking and Jumping (Ellen)')
+plt.xlabel('Time (s)', fontsize=15)
+plt.ylabel('XYZ Acceleration (m/s^2)', fontsize=15)
+ax3.plot(time, ErightHandW.iloc[startTime: endTime, 1], label='X', color='red')
+ax3.plot(time, ErightHandW.iloc[startTime: endTime, 2], label='Y', color='blue')
+ax3.plot(time, ErightHandW.iloc[startTime: endTime, 3], label='Z', color='green')
+
+ax3.plot(time, ErightHandJ.iloc[startTime: endTime, 1], label='Jump X', color='red', linestyle='dashed')
+ax3.plot(time, ErightHandJ.iloc[startTime: endTime, 2], label='Jump Y', color='blue', linestyle='dashed')
+ax3.plot(time, ErightHandJ.iloc[startTime: endTime, 3], label='Jump Z', color='green', linestyle='dashed')
+
+# plotting hand xyz accel [Matthew]
+fig4, ax4 = plt.subplots(figsize=(10, 10), layout="constrained")
+plt.title('XYZ-Axis Hand Walking and Jumping (Matthew)')
+plt.xlabel('Time (s)', fontsize=15)
+plt.ylabel('XYZ Acceleration (m/s^2)', fontsize=15)
+ax4.plot(time, MrightHandW.iloc[startTime: endTime, 1], label='X', color='red')
+ax4.plot(time, MrightHandW.iloc[startTime: endTime, 2], label='Y', color='blue')
+ax4.plot(time, MrightHandW.iloc[startTime: endTime, 3], label='Z', color='green')
+
+ax4.plot(time, MrightHandJ.iloc[startTime: endTime, 1], label='Jump X', color='red', linestyle='dashed')
+ax4.plot(time, MrightHandJ.iloc[startTime: endTime, 2], label='Jump Y', color='blue', linestyle='dashed')
+ax4.plot(time, MrightHandJ.iloc[startTime: endTime, 3], label='Jump Z', color='green', linestyle='dashed')
+
+# plotting x-axis of right front pocket of everyone
+fig5, ax5 = plt.subplots(figsize=(10, 10), layout="constrained")
+plt.title('X-Axis Right Front Walking and Jumping Pocket (All)')
+plt.xlabel('Time (s)', fontsize=15)
+plt.ylabel('X Acceleration (m/s^2)', fontsize=15)
+ax5.plot(timeSmall, MrightFrontPocketW.iloc[smallStart: smallEnd, 1], label='M', color='red')
+ax5.plot(timeSmall, WrightFrontPocketW.iloc[smallStart: smallEnd, 1], label='W', color='blue')
+ax5.plot(timeSmall, ErightFrontPocketW.iloc[smallStart: smallEnd, 1], label='E', color='green')
+
+ax5.plot(timeSmall, MrightFrontPocketJ.iloc[smallStart: smallEnd, 1], label='M', color='red', linestyle='dashed')
+ax5.plot(timeSmall, WrightFrontPocketJ.iloc[smallStart: smallEnd, 1], label='W', color='blue', linestyle='dashed')
+ax5.plot(timeSmall, ErightFrontPocketJ.iloc[smallStart: smallEnd, 1], label='E', color='green', linestyle='dashed')
+
+# plotting y axis of right front pocket data of everyone
+fig6, ax6 = plt.subplots(figsize=(10, 10), layout="constrained")
+plt.title('Y-Axis Right Front Walking and Jumping Pocket (All)')
+plt.xlabel('Time (s)', fontsize=15)
+plt.ylabel('Y Acceleration (m/s^2)', fontsize=15)
+ax6.plot(timeSmall, MrightFrontPocketW.iloc[smallStart: smallEnd, 2], label='M', color='red')
+ax6.plot(timeSmall, WrightFrontPocketW.iloc[smallStart: smallEnd, 2], label='W', color='blue')
+ax6.plot(timeSmall, ErightFrontPocketW.iloc[smallStart: smallEnd, 2], label='E', color='green')
+
+ax6.plot(timeSmall, MrightFrontPocketJ.iloc[smallStart: smallEnd, 2], label='M', color='red', linestyle='dashed')
+ax6.plot(timeSmall, WrightFrontPocketJ.iloc[smallStart: smallEnd, 2], label='W', color='blue', linestyle='dashed')
+ax6.plot(timeSmall, ErightFrontPocketJ.iloc[smallStart: smallEnd, 2], label='E', color='green', linestyle='dashed')
+
+# plotting z axis of right front pocket data
+fig7, ax7 = plt.subplots(figsize=(10, 10), layout="constrained")
+plt.title('Z-Axis Right Front Walking and Jumping Pocket (All)')
+plt.xlabel('Time (s)', fontsize=15)
+plt.ylabel('Z Acceleration (m/s^2)', fontsize=15)
+ax7.plot(timeSmall, MrightFrontPocketW.iloc[smallStart: smallEnd, 3], label='M', color='red')
+ax7.plot(timeSmall, WrightFrontPocketW.iloc[smallStart: smallEnd, 3], label='W', color='blue')
+ax7.plot(timeSmall, ErightFrontPocketW.iloc[smallStart: smallEnd, 3], label='E', color='green')
+
+ax7.plot(timeSmall, MrightFrontPocketJ.iloc[smallStart: smallEnd, 3], label='M', color='red', linestyle='dashed')
+ax7.plot(timeSmall, WrightFrontPocketJ.iloc[smallStart: smallEnd, 3], label='W', color='blue', linestyle='dashed')
+ax7.plot(timeSmall, ErightFrontPocketJ.iloc[smallStart: smallEnd, 3], label='E', color='green', linestyle='dashed')
+
+# plotting walking x axis standalone [Ellen]
+
+fig8, ax8 = plt.subplots(figsize=(10, 10), layout="constrained")
+plt.title('X-Axis Left Jacket Pocket Walking and Jumping (Ellen)')
+plt.xlabel('Time (s)', fontsize=15)
+plt.ylabel('X Acceleration (m/s^2)', fontsize=15)
+ax8.plot(time, EleftJacketPocketW.iloc[startTime: endTime, 1], label='walk', color='red')
+ax8.plot(time, EleftJacketPocketJ.iloc[startTime: endTime, 1], label='jump', color='green')
+
+# plotting y-axis standalone
+
+fig9, ax9 = plt.subplots(figsize=(10, 10), layout="constrained")
+plt.title('Y-Axis Left Jacket Pocket Walking and Jumping (Ellen)')
+plt.xlabel('Time (s)', fontsize=15)
+plt.ylabel('Y Acceleration (m/s^2)', fontsize=15)
+ax9.plot(time, EleftJacketPocketW.iloc[startTime: endTime, 2], label='walk', color='red')
+ax9.plot(time, EleftJacketPocketJ.iloc[startTime: endTime, 2], label='jump', color='green')
+
+# plotting z-axis standalone
+
+fig10, ax10 = plt.subplots(figsize=(10, 10), layout="constrained")
+plt.title('Z-Axis Left Jacket Pocket Walking and Jumping (Ellen)')
+plt.xlabel('Time (s)', fontsize=15)
+plt.ylabel('Z Acceleration (m/s^2)', fontsize=15)
+ax10.plot(time, EleftJacketPocketW.iloc[startTime: endTime, 3], label='walk', color='red')
+ax10.plot(time, EleftJacketPocketJ.iloc[startTime: endTime, 3], label='jump', color='green')
 plt.show()
-
 # Hand
 
 
@@ -237,7 +349,6 @@ with h5py.File('data.h5', 'w') as hdf:
     Ellen_Group.create_dataset('erjj', data=ErightJacketPocketJ)
     Ellen_Group.create_dataset('erfpj', data=ErightFrontPocketJ)
     Ellen_Group.create_dataset('eljj', data=EleftJacketPocketJ)
-
 
 #  # Pre-processing step: (note: move imported libraries to top once finished*****)
 #
