@@ -315,40 +315,50 @@ with h5py.File('data.h5', 'w') as hdf:
 
     # Feature Extraction Part 1
     features = []
-    feats = pd.DataFrame(columns=['Max Absolute Acceleration', 'Min Absolute Acceleration', 'Peak to Peak Range',
-                                  'Mean Absolute Acceleration', 'Median Absolute Acceleration',
-                                  'Variance', 'Skew', 'Kurtosis', 'Standard Deviation', 'Mode Absolute Acceleration'])
 
     # Shuffle Group Elements
     for i in range(count_segments):
-        print(segments[i])
+        # print(segments[i])
         dataframe = pd.DataFrame(segments[i])
 
         print("Preprocessing...")
         scaler = preprocessing.StandardScaler()
         df = pd.DataFrame(data=scaler.fit_transform(dataframe))
-        print(df)
+        df.to_csv("Data/PreProcessedData.csv")
+        # print(df)
 
-        fig, ax = plt.subplots(figsize=(10, 10), layout="constrained")
-        plt.title('reprocessed Data 2')
-        # plt.xlabel('Time (s)', fontsize=15)
-        plt.ylabel('Absolute Acceleration', fontsize=15)
-        ax.plot(df[0], df[3])
-        plt.show()
+        # fig, ax = plt.subplots(figsize=(10, 10), layout="constrained")
+        # plt.title('reprocessed Data 2')
+        # # plt.xlabel('Time (s)', fontsize=15)
+        # plt.ylabel('Absolute Acceleration', fontsize=15)
+        # ax.plot(df[0], df[3])
+        # plt.show()
+
+        w_size = 5
+
+        feature_names = ['Max', 'Min', 'Peak to Peak Range', 'Mean', 'Median', 'Variance', 'Skew', 'Kurtosis',
+                         'Standard Deviation', 'Inter Quartile Range']
+
+        feats = pd.DataFrame(columns=feature_names)
 
         # Feature Extraction Part 2
-        features = [np.max(segments[i]['Absolute acceleration (m/s^2)']),
-                    np.min(segments[i]['Absolute acceleration (m/s^2)']),
-                    np.ptp(segments[i]['Absolute acceleration (m/s^2)']),
-                    np.mean(segments[i]['Absolute acceleration (m/s^2)']),
-                    np.median(segments[i]['Absolute acceleration (m/s^2)']),
-                    np.var(segments[i]['Absolute acceleration (m/s^2)']),
-                    skew(segments[i]['Absolute acceleration (m/s^2)']),
-                    kurtosis(segments[i]['Absolute acceleration (m/s^2)']),
-                    np.std(segments[i]['Absolute acceleration (m/s^2)']),
-                    statistics.mode(segments[i]['Absolute acceleration (m/s^2)'])]
-        feats = feats.append(pd.DataFrame([features], columns=feats.columns), ignore_index=True)
+        features = [df.rolling(w_size).max().iloc[:, w_size - 1],
+                    df.rolling(w_size).min().iloc[:, w_size - 1],
+                    df.rolling(w_size).apply(lambda x: x.max() - x.min()).iloc[:, w_size - 1],  # peak to peak range
+                    df.rolling(w_size).mean().iloc[:, w_size - 1],
+                    df.rolling(w_size).median().iloc[:, w_size - 1],
+                    df.rolling(w_size).var().iloc[:, w_size - 1],
+                    df.rolling(w_size).skew().iloc[:, w_size - 1],
+                    df.rolling(w_size).kurt().iloc[:, w_size - 1],
+                    df.rolling(w_size).std().iloc[:, w_size - 1],
+                    (df.rolling(w_size).quantile(0.75).iloc[:, w_size - 1]) - (
+                    df.rolling(w_size).quantile(0.25).iloc[:, w_size - 1])
+                    ]
+
+        for j in range(len(features)):
+            feats[feature_names[j]] = features[j]
         print(feats)
+        feats.to_csv('Data/Features.csv', index=False)
 
     # Data Shuffling
     segments[i] = segments[i].sample(frac=1).reset_index(drop=True)
