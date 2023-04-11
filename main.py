@@ -6,6 +6,10 @@ from scipy.stats import skew, kurtosis
 import statistics
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
+from sklearn import preprocessing
+import tkinter as tk
+from tkinter.filedialog import askopenfilename
+
 
 # Matt's Data
 MrightHandW = pd.read_csv('Walking_Data/MrightHandW.csv')
@@ -102,7 +106,7 @@ startTime = 3000
 endTime = 3500
 smallStart = 3000
 smallEnd = 3300
-print(combined_data)
+# print(combined_data)
 time = combined_data.iloc[startTime:endTime, 0]
 timeSmall = combined_data.iloc[smallStart: smallEnd, 0]
 
@@ -123,13 +127,15 @@ fig, ax = plt.subplots(figsize=(10, 10), layout="constrained")
 plt.title('Z-Axis Left Back Pocket Walking and Jumping (All)')
 plt.xlabel('Time (s)', fontsize=15)
 plt.ylabel('Z Acceleration (m/s^2)', fontsize=15)
-ax.plot(time, EllenZW, label='Ellen Walking', color='red')
-ax.plot(time, WarrenZW, label='Warren Walking', color='green')
-ax.plot(time, MattZW, label='Matt Walking', color='blue')
+ax.scatter(time, EllenZW, label='Ellen Walking', color='red')
+ax.scatter(time, WarrenZW, label='Warren Walking', color='green')
+ax.scatter(time, MattZW, label='Matt Walking', color='blue')
 
-ax.plot(time, EllenZJ, label='Ellen Walking', color='red', linestyle='dashed')
-ax.plot(time, WarrenZJ, label='Warren Walking', color='green', linestyle='dashed')
-ax.plot(time, MattZJ, label='Matt Walking', color='blue', linestyle='dashed')
+ax.scatter(time, EllenZJ, label='Ellen Walking', color='red', linestyle='dashed')
+ax.scatter(time, WarrenZJ, label='Warren Walking', color='green', linestyle='dashed')
+ax.scatter(time, MattZJ, label='Matt Walking', color='blue', linestyle='dashed')
+plt.legend(loc="upper left")
+
 
 # plotting left back pocket xyz accel [Ellen]
 fig1, ax1 = plt.subplots(figsize=(10, 10), layout="constrained")
@@ -143,6 +149,8 @@ ax1.plot(time, EleftBackPocketW.iloc[startTime: endTime, 3], label='Z', color='g
 ax1.plot(time, EleftBackPocketJ.iloc[startTime: endTime, 1], label='Jump X', color='red', linestyle='dashed')
 ax1.plot(time, EleftBackPocketJ.iloc[startTime: endTime, 2], label='Jump Y', color='blue', linestyle='dashed')
 ax1.plot(time, EleftBackPocketJ.iloc[startTime: endTime, 3], label='Jump Z', color='green', linestyle='dashed')
+plt.legend(loc="upper left")
+
 
 # plotting hand xyz accel [Warren]
 fig2, ax2 = plt.subplots(figsize=(10, 10), layout="constrained")
@@ -156,6 +164,8 @@ ax2.plot(time, WrightHandW.iloc[startTime: endTime, 3], label='Z', color='green'
 ax2.plot(time, WrightHandJ.iloc[startTime: endTime, 1], label='Jump X', color='red', linestyle='dashed')
 ax2.plot(time, WrightHandJ.iloc[startTime: endTime, 2], label='Jump Y', color='blue', linestyle='dashed')
 ax2.plot(time, WrightHandJ.iloc[startTime: endTime, 3], label='Jump Z', color='green', linestyle='dashed')
+plt.legend(loc="upper left")
+
 
 # plotting hand xyz accel [Ellen]
 fig3, ax3 = plt.subplots(figsize=(10, 10), layout="constrained")
@@ -169,6 +179,8 @@ ax3.plot(time, ErightHandW.iloc[startTime: endTime, 3], label='Z', color='green'
 ax3.plot(time, ErightHandJ.iloc[startTime: endTime, 1], label='Jump X', color='red', linestyle='dashed')
 ax3.plot(time, ErightHandJ.iloc[startTime: endTime, 2], label='Jump Y', color='blue', linestyle='dashed')
 ax3.plot(time, ErightHandJ.iloc[startTime: endTime, 3], label='Jump Z', color='green', linestyle='dashed')
+plt.legend(loc="upper left")
+
 
 # plotting hand xyz accel [Matthew]
 fig4, ax4 = plt.subplots(figsize=(10, 10), layout="constrained")
@@ -182,6 +194,8 @@ ax4.plot(time, MrightHandW.iloc[startTime: endTime, 3], label='Z', color='green'
 ax4.plot(time, MrightHandJ.iloc[startTime: endTime, 1], label='Jump X', color='red', linestyle='dashed')
 ax4.plot(time, MrightHandJ.iloc[startTime: endTime, 2], label='Jump Y', color='blue', linestyle='dashed')
 ax4.plot(time, MrightHandJ.iloc[startTime: endTime, 3], label='Jump Z', color='green', linestyle='dashed')
+plt.legend(loc="upper left")
+
 
 # plotting x-axis of right front pocket of everyone
 fig5, ax5 = plt.subplots(figsize=(10, 10), layout="constrained")
@@ -195,8 +209,10 @@ ax5.plot(timeSmall, ErightFrontPocketW.iloc[smallStart: smallEnd, 1], label='E',
 ax5.plot(timeSmall, MrightFrontPocketJ.iloc[smallStart: smallEnd, 1], label='M', color='red', linestyle='dashed')
 ax5.plot(timeSmall, WrightFrontPocketJ.iloc[smallStart: smallEnd, 1], label='W', color='blue', linestyle='dashed')
 ax5.plot(timeSmall, ErightFrontPocketJ.iloc[smallStart: smallEnd, 1], label='E', color='green', linestyle='dashed')
+plt.legend(loc="upper left")
 
-# plotting y axis of right front pocket data of everyone
+
+# plotting y-axis of right front pocket data of everyone
 fig6, ax6 = plt.subplots(figsize=(10, 10), layout="constrained")
 plt.title('Y-Axis Right Front Walking and Jumping Pocket (All)')
 plt.xlabel('Time (s)', fontsize=15)
@@ -208,8 +224,10 @@ ax6.plot(timeSmall, ErightFrontPocketW.iloc[smallStart: smallEnd, 2], label='E',
 ax6.plot(timeSmall, MrightFrontPocketJ.iloc[smallStart: smallEnd, 2], label='M', color='red', linestyle='dashed')
 ax6.plot(timeSmall, WrightFrontPocketJ.iloc[smallStart: smallEnd, 2], label='W', color='blue', linestyle='dashed')
 ax6.plot(timeSmall, ErightFrontPocketJ.iloc[smallStart: smallEnd, 2], label='E', color='green', linestyle='dashed')
+plt.legend(loc="upper left")
 
-# plotting z axis of right front pocket data
+
+# plotting z-axis of right front pocket data
 fig7, ax7 = plt.subplots(figsize=(10, 10), layout="constrained")
 plt.title('Z-Axis Right Front Walking and Jumping Pocket (All)')
 plt.xlabel('Time (s)', fontsize=15)
@@ -221,51 +239,77 @@ ax7.plot(timeSmall, ErightFrontPocketW.iloc[smallStart: smallEnd, 3], label='E',
 ax7.plot(timeSmall, MrightFrontPocketJ.iloc[smallStart: smallEnd, 3], label='M', color='red', linestyle='dashed')
 ax7.plot(timeSmall, WrightFrontPocketJ.iloc[smallStart: smallEnd, 3], label='W', color='blue', linestyle='dashed')
 ax7.plot(timeSmall, ErightFrontPocketJ.iloc[smallStart: smallEnd, 3], label='E', color='green', linestyle='dashed')
+plt.legend(loc="upper left")
 
-# plotting walking x axis standalone [Ellen]
 
+# plotting walking x-axis standalone [Ellen]
 fig8, ax8 = plt.subplots(figsize=(10, 10), layout="constrained")
 plt.title('X-Axis Left Jacket Pocket Walking and Jumping (Ellen)')
 plt.xlabel('Time (s)', fontsize=15)
 plt.ylabel('X Acceleration (m/s^2)', fontsize=15)
 ax8.plot(time, EleftJacketPocketW.iloc[startTime: endTime, 1], label='walk', color='red')
 ax8.plot(time, EleftJacketPocketJ.iloc[startTime: endTime, 1], label='jump', color='green')
+plt.legend(loc="upper left")
+
 
 # plotting y-axis standalone
-
 fig9, ax9 = plt.subplots(figsize=(10, 10), layout="constrained")
 plt.title('Y-Axis Left Jacket Pocket Walking and Jumping (Ellen)')
 plt.xlabel('Time (s)', fontsize=15)
 plt.ylabel('Y Acceleration (m/s^2)', fontsize=15)
 ax9.plot(time, EleftJacketPocketW.iloc[startTime: endTime, 2], label='walk', color='red')
 ax9.plot(time, EleftJacketPocketJ.iloc[startTime: endTime, 2], label='jump', color='green')
+plt.legend(loc="upper left")
+
 
 # plotting z-axis standalone
-
 fig10, ax10 = plt.subplots(figsize=(10, 10), layout="constrained")
 plt.title('Z-Axis Left Jacket Pocket Walking and Jumping (Ellen)')
 plt.xlabel('Time (s)', fontsize=15)
 plt.ylabel('Z Acceleration (m/s^2)', fontsize=15)
 ax10.plot(time, EleftJacketPocketW.iloc[startTime: endTime, 3], label='walk', color='red')
 ax10.plot(time, EleftJacketPocketJ.iloc[startTime: endTime, 3], label='jump', color='green')
+plt.legend(loc="upper left")
+
 plt.show()
-# Hand
 
-
-# Jacket
-
-
-# Jumping
+# GUI
+# def open_file():
+#     """Open a file for editing."""
+#     filepath = askopenfilename(
+#         filetypes=[("CSV Files", "*.csv")]
+#     )
+#     if not filepath:
+#         return
+#     file_display.delete("1.0", tk.END)
+#     with open(filepath, mode="r", encoding="utf-8") as input_file:
+#         text = input_file.read()
+#         file_display.insert(tk.END, text)
+#     window.title(f"Movement Tracking - {filepath}")
+#
+#
+# window = tk.Tk()
+# window.title("Movement Tracking")
+#
+# file_display = tk.Text(window)
+# form_buttons = tk.Frame(window, relief=tk.RAISED, bd=2)
+#
+# btn_open = tk.Button(form_buttons, text="Open File", command=open_file)
+# btn_open.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
+#
+# form_buttons.grid(row=0, column=0, sticky="ns")
+# file_display.grid(row=0, column=1, sticky="nsew")
+# window.mainloop()
 
 
 with h5py.File('data.h5', 'w') as hdf:
     # Combined Dataset Creation
     combined_DataSet = hdf.create_group('/mainDataset')
     combined_DataSet.create_dataset('mainDataset', data=combined_data)
+    window_size = 500
 
     comb = pd.read_csv('Data/Combined_Dataset.csv')
 
-    window_size = 500
     segments = [comb.iloc[i:i + window_size] for i in range(0, len(comb), window_size)]
     count_segments = int(np.ceil(len(comb) / window_size))
 
@@ -277,7 +321,20 @@ with h5py.File('data.h5', 'w') as hdf:
 
     # Shuffle Group Elements
     for i in range(count_segments):
-        segments[i] = segments[i].sample(frac=1).reset_index(drop=True)
+        print(segments[i])
+        dataframe = pd.DataFrame(segments[i])
+
+        print("Preprocessing...")
+        scaler = preprocessing.StandardScaler()
+        df = pd.DataFrame(data=scaler.fit_transform(dataframe))
+        print(df)
+
+        fig, ax = plt.subplots(figsize=(10, 10), layout="constrained")
+        plt.title('reprocessed Data 2')
+        # plt.xlabel('Time (s)', fontsize=15)
+        plt.ylabel('Absolute Acceleration', fontsize=15)
+        ax.plot(df[0], df[3])
+        plt.show()
 
         # Feature Extraction Part 2
         features = [np.max(segments[i]['Absolute acceleration (m/s^2)']),
@@ -291,6 +348,10 @@ with h5py.File('data.h5', 'w') as hdf:
                     np.std(segments[i]['Absolute acceleration (m/s^2)']),
                     statistics.mode(segments[i]['Absolute acceleration (m/s^2)'])]
         feats = feats.append(pd.DataFrame([features], columns=feats.columns), ignore_index=True)
+        print(feats)
+
+    # Data Shuffling
+    segments[i] = segments[i].sample(frac=1).reset_index(drop=True)
 
     # Training and Testing File Creation
     train_data, test_data = train_test_split(comb, test_size=0.1)
@@ -349,36 +410,3 @@ with h5py.File('data.h5', 'w') as hdf:
     Ellen_Group.create_dataset('erjj', data=ErightJacketPocketJ)
     Ellen_Group.create_dataset('erfpj', data=ErightFrontPocketJ)
     Ellen_Group.create_dataset('eljj', data=EleftJacketPocketJ)
-
-#  # Pre-processing step: (note: move imported libraries to top once finished*****)
-#
-# #  import pandas as pd
-# # import numpy as np
-# # from sklearn.preprocessing import StandardScaler
-#
-#  # Load the dataset
-# data = pd.read_csv('Data/Combined_Dataset.csv')
-#
-# # Apply moving average filter with window size 3
-# data['smoothed'] = data['Acceleration x (m/s^2)'].rolling(window=3).mean()
-#
-# # Remove outliers using Z-score method
-# data['z_score'] = np.abs((data['Acceleration x (m/s^2)'] - data['Acceleration x (m/s^2)'].mean()) / data['Acceleration x (m/s^2)'].std())
-# data = data[data['z_score'] < 3]
-#
-# # Check class balance and remedy if necessary
-# class_counts = data['Acceleration x (m/s^2)'].value_counts()
-# minority_class = class_counts.idxmin()
-# majority_class = class_counts.idxmax()
-# class_ratio = class_counts[minority_class] / class_counts[majority_class]
-# if class_ratio < 0.1:
-#     # Upsample the minority class
-#     minority_data = data[data['Acceleration x (m/s^2)'] == minority_class]
-#     majority_data = data[data['Acceleration x (m/s^2)'] == majority_class]
-#     minority_data_upsampled = minority_data.sample(n=len(majority_data), replace=True, random_state=42)
-#     data = pd.concat([majority_data, minority_data_upsampled])
-#     print(data)
-#
-# # Normalize the data using StandardScaler
-# scaler = StandardScaler()
-# data['normalized'] = scaler.fit_transform(data[['smoothed', 'feature1', 'feature2', 'feature3']])
