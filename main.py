@@ -1,15 +1,23 @@
+import os
+import random
+from sklearn.decomposition import PCA
+from sklearn.inspection import DecisionBoundaryDisplay
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 import numpy as np
 import h5py
 import pandas as pd
 from scipy.stats import skew, kurtosis
 import statistics
+from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
+from sklearn.linear_model import LogisticRegression
 
+np.random.seed(90)
 
 # Matt's Data
 MrightHandW = pd.read_csv('Walking_Data/MrightHandW.csv')
@@ -66,6 +74,22 @@ Ellens_Dataset = pd.concat([EleftBackPocketW, EleftJacketPocketW, ErightFrontPoc
 
 Ellens_Dataset.to_csv('Data/Ellens_Data.csv')
 
+
+Walk_Dataset = pd.concat([MleftBackPocketW, MleftJacketPocketW, MrightFrontPocketW, MrightHandW, MrightJacketPocketW,
+WleftBackPocketW, WleftJacketPocketW, WrightFrontPocketW, WrightHandW, WrightJacketPocketW,
+EleftBackPocketW, EleftJacketPocketW, ErightFrontPocketW, ErightHandW, ErightJacketPocketW])
+Walk_Dataset['label']=0
+
+
+Jump_Dataset = pd.concat([MleftBackPocketJ, MleftJacketPocketJ, MrightFrontPocketJ, MrightHandJ, MrightJacketPocketJ,
+WleftBackPocketJ, WleftJacketPocketJ, WrightFrontPocketJ, WrightHandJ, WrightJacketPocketJ,
+EleftBackPocketJ, EleftJacketPocketJ, ErightFrontPocketJ, ErightHandJ, ErightJacketPocketJ])
+Jump_Dataset['label']=1
+
+
+Full_set = pd.concat([Jump_Dataset, Walk_Dataset], ignore_index=True)
+Full_set.to_csv('Data/Labeled_Full.csv', index=False)
+
 combined_data = pd.concat([
     EleftBackPocketW,
     EleftJacketPocketW,
@@ -117,10 +141,17 @@ WarrenZW = WleftBackPocketW.iloc[startTime:endTime, 3]
 MattZW = MleftBackPocketW.iloc[startTime:endTime, 3]
 
 # Jumping
-
 EllenZJ = EleftBackPocketJ.iloc[startTime:endTime, 3]
 WarrenZJ = WleftBackPocketJ.iloc[startTime:endTime, 3]
 MattZJ = MleftBackPocketJ.iloc[startTime:endTime, 3]
+
+fig11, ax11 = plt.subplots(figsize=(10, 10), layout="constrained")
+plt.title('Full Set')
+plt.xlabel('Time (s)', fontsize=15)
+plt.ylabel('Acceleration (m/s^2)', fontsize=15)
+ax11.scatter(Full_set['Time (s)'], Full_set['Absolute acceleration (m/s^2)'], label='Full Set', color='red')
+ax11.scatter(Full_set['Time (s)'], Full_set['label'], label='Full Set Label', color='blue')
+plt.legend(loc="upper left")
 
 # plotting left back pocket Z axis
 fig, ax = plt.subplots(figsize=(10, 10), layout="constrained")
@@ -270,7 +301,6 @@ plt.ylabel('Z Acceleration (m/s^2)', fontsize=15)
 ax10.plot(time, EleftJacketPocketW.iloc[startTime: endTime, 3], label='walk', color='red')
 ax10.plot(time, EleftJacketPocketJ.iloc[startTime: endTime, 3], label='jump', color='green')
 plt.legend(loc="upper left")
-
 plt.show()
 
 # GUI
@@ -301,80 +331,104 @@ plt.show()
 # file_display.grid(row=0, column=1, sticky="nsew")
 # window.mainloop()
 
+# DELETE WHEN USING THIS IS ONLY FOR MAKING TESTING EASIER
+if os.path.exists("Data/Features_Combined.csv"):
+    os.remove("Data/Features_Combined.csv")
+    print("File deleted")
 
 with h5py.File('data.h5', 'w') as hdf:
     # Combined Dataset Creation
     combined_DataSet = hdf.create_group('/mainDataset')
-    combined_DataSet.create_dataset('mainDataset', data=combined_data)
-    window_size = 500
+    combined_DataSet.create_dataset('mainDataset', data=Full_set)
 
-    comb = pd.read_csv('Data/Combined_Dataset.csv')
+    # Cleaning (Pre Processing)
+    for column in Full_set.columns:
+        Full_set[column] = Full_set[column].rolling(window=60).mean()
 
-    segments = [comb.iloc[i:i + window_size] for i in range(0, len(comb), window_size)]
-    count_segments = int(np.ceil(len(comb) / window_size))
+    # Drop rows with missing values
+    Full_set.dropna(inplace=True)
+    fig11, ax12 = plt.subplots(figsize=(10, 10), layout="constrained")
+    plt.title('Full Set Data')
+    plt.xlabel('Time (s)', fontsize=15)
+    plt.ylabel('Acceleration (m/s^2)', fontsize=15)
+    ax12.scatter(Full_set['Time (s)'], Full_set['Absolute acceleration (m/s^2)'], label='Full Set', color='red')
+    plt.legend(loc="upper left")
+    plt.show()
+
+    # Save preprocessed data
+    Full_set.to_csv('Data/Combined_Dataset_preprocessed.csv', index=False)
+
+    window_size = 480
+
+    # Segmenting Data
+    segments = [Full_set.iloc[i:i + window_size] for i in range(0, len(Full_set), window_size)]
+    count_segments = int(np.ceil(len(Full_set) / window_size))
 
     # Feature Extraction Part 1
     features = []
+    fea = []
 
-    # Shuffle Group Elements
     for i in range(count_segments):
-        # print(segments[i])
+        # Data Shuffling
+        # # segments[i] = segments[i].sample(frac=1).reset_index(drop=True)
+
         dataframe = pd.DataFrame(segments[i])
+        # print(dataframe)
+        # print(dataframe.iloc[:, -1])
 
-        print("Preprocessing...")
+        # Normalizing (Pre Processing)
         scaler = preprocessing.StandardScaler()
-        df = pd.DataFrame(data=scaler.fit_transform(dataframe))
-        df.to_csv("Data/PreProcessedData.csv")
-        # print(df)
+        df2 = pd.DataFrame(data=scaler.fit_transform(dataframe.iloc[:, :-1]))
+        df2.to_csv("Data/PreProcessedD.csv", index=False)
 
+        # Graphing the Normalized Data
         # fig, ax = plt.subplots(figsize=(10, 10), layout="constrained")
         # plt.title('reprocessed Data 2')
         # # plt.xlabel('Time (s)', fontsize=15)
         # plt.ylabel('Absolute Acceleration', fontsize=15)
-        # ax.plot(df[0], df[3])
+        # ax.plot(df2[0], df2[4])
         # plt.show()
 
         w_size = 5
 
-        feature_names = ['Max', 'Min', 'Peak to Peak Range', 'Mean', 'Median', 'Variance', 'Skew', 'Kurtosis',
-                         'Standard Deviation', 'Inter Quartile Range']
+        feature_names = ['Max', 'Min', 'Peak to Peak Range', 'Mean', 'Median', 'Variance', 'Skew', 'Kurtosis', 'Standard Deviation', 'Inter Quartile Range']
 
         feats = pd.DataFrame(columns=feature_names)
 
         # Feature Extraction Part 2
-        features = [df.rolling(w_size).max().iloc[:, w_size - 1],
-                    df.rolling(w_size).min().iloc[:, w_size - 1],
-                    df.rolling(w_size).apply(lambda x: x.max() - x.min()).iloc[:, w_size - 1],  # peak to peak range
-                    df.rolling(w_size).mean().iloc[:, w_size - 1],
-                    df.rolling(w_size).median().iloc[:, w_size - 1],
-                    df.rolling(w_size).var().iloc[:, w_size - 1],
-                    df.rolling(w_size).skew().iloc[:, w_size - 1],
-                    df.rolling(w_size).kurt().iloc[:, w_size - 1],
-                    df.rolling(w_size).std().iloc[:, w_size - 1],
-                    (df.rolling(w_size).quantile(0.75).iloc[:, w_size - 1]) - (
-                    df.rolling(w_size).quantile(0.25).iloc[:, w_size - 1])
-                    ]
+        features = [df2.max().values,
+                    df2.min().values,
+                    df2.max().values-df2.min().values,
+                    df2.mean().values,
+                    df2.median().values,
+                    df2.var().values,
+                    df2.skew().values,
+                    df2.kurt().values,
+                    df2.std(axis=1).values,
+                    df2.quantile(0.75).values-df2.quantile(0.25).values]
+        feats.loc[i] = [features[j][4] for j in range(len(features))]
 
-        for j in range(len(features)):
-            feats[feature_names[j]] = features[j]
-        print(feats)
-        feats.to_csv('Data/Features.csv', index=False)
+        # print(dataframe['label'])
+        # feats['label'] = dataframe['label']
 
-    # Data Shuffling
-    segments[i] = segments[i].sample(frac=1).reset_index(drop=True)
+        with open('Data/Features_Combined.csv', 'a') as f:
+            feats.to_csv(f, header=f.tell() == 0, index=False)
+
+        # Data Shuffling
+        segments[i] = segments[i].sample(frac=1).reset_index(drop=True)
 
     # Training and Testing File Creation
-    train_data, test_data = train_test_split(comb, test_size=0.1)
-    train_data.to_csv('Data/Training_Data.csv')
-    test_data.to_csv('Data/Testing_Data.csv')
+    # train_data, test_data = train_test_split(comb, test_size=0.1)
+    # train_data.to_csv('Data/Training_Data.csv')
+    # test_data.to_csv('Data/Testing_Data.csv')
 
     # Training Dataset Creation
-    training_Dataset = hdf.create_group('/mainDataset/Training')
-    training_Dataset.create_dataset('training_dataset', data=train_data)
+    # training_Dataset = hdf.create_group('/mainDataset/Training')
+    # training_Dataset.create_dataset('training_dataset', data=train_data)
 
     # Testing Dataset Creation
-    testing_Dataset = hdf.create_group('/mainDataset/Testing')
-    testing_Dataset.create_dataset('testing_dataset', data=test_data)
+    # testing_Dataset = hdf.create_group('/mainDataset/Testing')
+    # testing_Dataset.create_dataset('testing_dataset', data=test_data)
 
     # Matt's Dataset Creation
     # Walking
@@ -420,3 +474,54 @@ with h5py.File('data.h5', 'w') as hdf:
     Ellen_Group.create_dataset('erjj', data=ErightJacketPocketJ)
     Ellen_Group.create_dataset('erfpj', data=ErightFrontPocketJ)
     Ellen_Group.create_dataset('eljj', data=EleftJacketPocketJ)
+
+
+    #---------------------------------------------------------------------------------------------------
+
+    #creating a classifier
+
+print('HERE 2')
+
+dfw = pd.read_csv('Data/Features_Combined.csv')
+# print(dfw)
+
+# def classifier(df):
+
+#add label matrix for the y train  and test in line 471
+df2 = dfw.dropna()
+X_train, X_test, Y_train, Y_test = train_test_split(df2[['Max', 'Min', 'Peak to Peak Range', 'Mean', 'Median', 'Variance',
+       'Skew', 'Kurtosis', 'Standard Deviation', 'Inter Quartile Range']], Full_set['label'].values[::480][:],
+                                                    test_size=0.1, shuffle=True)
+print(f'X Train: \n{X_train}')
+print(f'X Test: \n{X_test}')
+print(f'Y Train: \n{Y_train}')
+print(f'Y Test: \n{Y_test}')
+
+scaler = StandardScaler()
+l_reg = LogisticRegression(max_iter=10000)
+clf = make_pipeline(StandardScaler(), l_reg)
+clf.fit(X_train, Y_train)
+Y_pred = clf.predict(X_test)
+y_clf_prob = clf.predict_proba(X_test)
+
+normalization = StandardScaler()
+l_reg = LogisticRegression(max_iter=10000)
+pca = PCA(n_components=2)
+
+pca_pipe = make_pipeline(normalization, pca)
+
+X_train_pca = pca_pipe.fit_transform(X_train)
+X_test_pca = pca_pipe.fit_transform(X_test)
+
+clf = make_pipeline(l_reg)
+
+clf.fit(X_train_pca, Y_train)
+
+y_pred_pca = clf.predict(X_test_pca)
+
+disp = DecisionBoundaryDisplay.from_estimator(clf, X_train_pca, response_method = "predict", xlabel='X1', ylabel='X2', alpha=0.5)
+disp.ax_.scatter(X_train_pca[:,0], X_train_pca[:,1], c=Y_train)
+
+acc = accuracy_score(Y_test, y_pred_pca)
+print('accuracy is', acc)
+# plt.show()
