@@ -5,9 +5,9 @@ This project is a desktop application that uses data collected from a smartphone
 ### Prerequisites
 To run this project, you need to have the following installed:
 
-Python 3
-pandas
-scikit-learn
+- Python 3
+- pandas
+- scikit-learn
 ### Installation
 Clone the repository to your local machine.
 Install the required dependencies using pip.
