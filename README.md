@@ -15,7 +15,7 @@ python
 Copy code
 pip install pandas scikit-learn
 Run the application by executing the main.py file.
-Usage
+### Usage
 Prepare your accelerometer data in CSV format. The CSV file should have the following columns:
 
 x: The x-axis accelerometer data.
