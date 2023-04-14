@@ -21,12 +21,6 @@ Prepare your accelerometer data in CSV format. The CSV file should have the foll
 x: The x-axis accelerometer data.
 y: The y-axis accelerometer data.
 z: The z-axis accelerometer data.
-Run the main.py file. The application will prompt you to enter the path to your accelerometer data CSV file.
+Run the main.py file. The application will prompt you to enter your accelerometer data CSV file.
 
-The application will automatically apply logistic regression to classify each data point as either 'walking' or 'jumping'. The resulting labels will be written to a new CSV file with the suffix _labeled appended to the original filename.
-
-Contributing
-If you have suggestions for improving this project or find any bugs, please open an issue on the GitHub repository.
-
-License
-This project is licensed under the MIT License. See the LICENSE file for details.
+The application will automatically apply logistic regression to classify each data point as either 'walking' or 'jumping'.
